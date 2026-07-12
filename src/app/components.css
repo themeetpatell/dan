@@ -12,6 +12,12 @@
   min-height: 100dvh;
 }
 
+/* Mobile-only chrome — hidden on desktop, activated in the shell block at EOF */
+.mobile-topbar,
+.drawer-backdrop {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .app {
     grid-template-columns: 1fr;
@@ -36,11 +42,21 @@
 }
 
 @media (max-width: 900px) {
+  /* Off-canvas drawer: slides in over the content, toggled by the
+     mobile top bar (see MobileNav + the mobile shell block at EOF). */
   .sidebar {
-    position: relative;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 80;
+    width: min(86vw, 300px);
+    height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 0.28s var(--ease);
+  }
+  :root[data-drawer='open'] .sidebar {
+    transform: translateX(0);
+    box-shadow: var(--shadow-pop);
   }
 }
 
@@ -3194,4 +3210,169 @@
 }
 .plans-table__no {
   color: var(--text-faint);
+}
+
+/* ============================================================
+   Mobile shell — off-canvas drawer, top bar, and layout collapses.
+   Kept at EOF so these overrides win source order over the
+   desktop rail-collapse rules above.
+   ============================================================ */
+@media (max-width: 900px) {
+  /* --- Fixed mobile top bar (hamburger + brand) --- */
+  .mobile-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    background: var(--sidebar);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-topbar__menu {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .mobile-topbar__menu:hover {
+    background: var(--card-hover);
+    color: var(--text);
+  }
+  .mobile-topbar__brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    min-width: 0;
+  }
+  .mobile-topbar__brand span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* --- Backdrop behind the open drawer --- */
+  .drawer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 75;
+    border: none;
+    padding: 0;
+    background: color-mix(in oklab, var(--ink) 55%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.24s var(--ease);
+  }
+  :root[data-drawer='open'] .drawer-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Freeze the page behind the open drawer (preserves scroll position). */
+  :root[data-drawer='open'] body {
+    overflow: hidden;
+  }
+
+  /* --- Content clears the fixed top bar --- */
+  .content {
+    padding-top: 72px;
+  }
+  .topbar {
+    top: 56px;
+  }
+  .topbar .spacer {
+    display: none;
+  }
+  .topbar .input-wrap {
+    flex: 1;
+    max-width: none !important;
+  }
+
+  /* --- Drawer always shows the full sidebar, ignoring desktop rail
+         collapse. These re-assert the expanded layout regardless of
+         [data-sidebar='collapsed']. --- */
+  :root[data-sidebar='collapsed'] .sidebar {
+    padding: 18px 16px 14px;
+    align-items: stretch;
+  }
+  :root[data-sidebar='collapsed'] .rail-hide {
+    display: revert !important;
+  }
+  :root[data-sidebar='collapsed'] .rail-only,
+  :root[data-sidebar='collapsed'] .rail-stack {
+    display: none !important;
+  }
+  :root[data-sidebar='collapsed'] .account,
+  :root[data-sidebar='collapsed'] .foot-row {
+    display: flex !important;
+  }
+  :root[data-sidebar='collapsed'] .btn.rail-hide {
+    display: inline-flex !important;
+  }
+  :root[data-sidebar='collapsed'] .sidebar__brand,
+  :root[data-sidebar='collapsed'] .ws-brand {
+    display: flex;
+  }
+  :root[data-sidebar='collapsed'] .nav {
+    margin-top: 12px;
+    gap: 2px;
+    align-items: stretch;
+    /* x:hidden keeps the (hover-only) tooltips from making the rail
+       scroll sideways and clipping the labels off the left edge. */
+    overflow: hidden auto;
+    flex: 1;
+  }
+  /* Rail tooltips are a desktop-collapse affordance — no hover on touch. */
+  .sidebar .tip {
+    display: none;
+  }
+  :root[data-sidebar='collapsed'] .nav > div {
+    align-items: stretch;
+  }
+  :root[data-sidebar='collapsed'] .nav__group {
+    display: block;
+  }
+  :root[data-sidebar='collapsed'] .nav__item {
+    width: auto;
+    height: auto;
+    justify-content: flex-start;
+    padding: 9px 11px;
+  }
+  :root[data-sidebar='collapsed'] .nav__label,
+  :root[data-sidebar='collapsed'] .nav__badge {
+    display: revert;
+  }
+  :root[data-sidebar='collapsed'] .sidebar__back {
+    width: fit-content;
+    height: auto;
+    margin: 0;
+    padding: 8px 10px;
+    justify-content: flex-start;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+  }
+  :root[data-sidebar='collapsed'] .sidebar__foot {
+    align-items: stretch;
+  }
+
+  /* --- Form/detail pairs collapse to one column --- */
+  .kv,
+  .connect-fields__pair,
+  .popover__fields {
+    grid-template-columns: 1fr;
+  }
 }

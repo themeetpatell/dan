@@ -254,9 +254,11 @@
   overflow: hidden;
 }
 @media (max-width: 900px) {
+  /* Clear the fixed mobile top bar while keeping the internal-scroll
+     shell so the chat composer stays pinned. */
   .app-content {
-    height: auto;
-    overflow: visible;
+    height: calc(100dvh - 56px);
+    margin-top: 56px;
   }
 }
 
