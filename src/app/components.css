@@ -3376,3 +3376,52 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   Mobile — settings cards & log rows.
+   ============================================================ */
+@media (max-width: 640px) {
+  /* Card head: let a trailing plan-chip / action drop below the title
+     instead of squeezing the title into a one-word column. */
+  .card__head {
+    flex-wrap: wrap;
+  }
+  .card__head .plan-chip {
+    white-space: normal;
+  }
+
+  /* Pace note: text on its own row, actions wrap below instead of
+     compressing the message into a one-word column. */
+  .pace-note {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .pace-note > span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .pace-note__act {
+    margin-left: 0;
+  }
+
+  /* Debug-log rows wrap instead of overflowing off-screen. */
+  .log-row {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 12px 16px;
+  }
+  .log-row__tool {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .log-row__desc {
+    flex-basis: 100%;
+  }
+  .log-row .row__meta {
+    width: auto !important;
+    text-align: left !important;
+  }
+  .log-view {
+    margin-left: auto;
+  }
+}

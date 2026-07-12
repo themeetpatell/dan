@@ -966,9 +966,14 @@
 .feed-item__body {
   flex: 1;
   min-width: 0;
+  display: block;
 }
+/* Block-level so the collapsed ellipsis actually clips — as an inline
+   span, overflow/text-overflow were no-ops and long titles ran under
+   the meta + action cluster. */
 .feed-item__line {
   min-width: 0;
+  display: block;
 }
 .feed-item.collapsed .feed-item__line {
   overflow: hidden;
@@ -1666,4 +1671,31 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* ============================================================
+   Mobile — activity feed items.
+   On narrow screens the head row (badges + title + meta + actions)
+   has no room, squeezing the title into a one-word column and
+   overlapping the controls. Stack it: controls on top, title below.
+   ============================================================ */
+@media (max-width: 640px) {
+  .feed-item__head {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 13px 14px;
+  }
+  /* Row 1: badges (left) + actions (right). Row 2: the title toggle. */
+  .feed-item__actions {
+    order: 1;
+    margin-left: auto;
+  }
+  .feed-item__toggle {
+    order: 2;
+    flex-basis: 100%;
+    align-items: flex-start;
+  }
+  .feed-detail {
+    padding: 4px 14px 16px;
+  }
 }
